@@ -1,0 +1,142 @@
+<!doctype html>
+<!-- GENERATED FILE — edit src/ or data/, then run npm run build -->
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="時間の証左 — AI-operated, local-first daily evidence log">
+  <meta name="color-scheme" content="light dark">
+  <title>時間の証左 — Talk your day. Keep the evidence.</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect x='14' y='14' width='72' height='72' rx='22' fill='%232465e8'/%3E%3Cpath d='M32 34h36M32 50h26M32 66h18' stroke='white' stroke-width='7' stroke-linecap='round'/%3E%3C/svg%3E">
+  <style>
+/*__OPEN_DAILY_STYLES__*/
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="時間の証左 ホーム">
+        <span class="brandmark" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span><b>時間の証左</b><small>Talk your day. Keep the evidence.</small></span>
+      </a>
+      <span class="sample-badge" id="samplebadge">FICTIONAL SAMPLE</span>
+      <div class="spacer"></div>
+      <button class="themebtn" id="theme" aria-label="配色を切り替える" title="ライト / ダーク切替">◐</button>
+      <nav class="datenav" aria-label="日付の移動">
+        <div class="datelabel" id="datelabel"></div>
+        <button class="navbtn iconbtn" id="prev" title="前の日（←）" aria-label="前の日">←</button>
+        <button class="navbtn" id="today">最新日</button>
+        <button class="navbtn iconbtn" id="next" title="次の日（→）" aria-label="次の日">→</button>
+      </nav>
+    </header>
+
+    <section class="intro" id="sampleintro">
+      <div>
+        <span class="eyebrow">AI-OPERATED · LOCAL-FIRST</span>
+        <h1>話すだけで、<br>一日が証左になる。</h1>
+      </div>
+      <p>これは完全に架空の3日間です。曖昧さによる手戻りから、条件を観測し、関係職種を早く巻き込み、成果と学びを確定するまでを辿れます。</p>
+    </section>
+
+    <main>
+      <div class="cols">
+        <section class="card timeline-card" aria-label="一日のタイムライン">
+          <div class="cardcap"><span>DAY TIMELINE</span><span id="entrycount"></span></div>
+          <div class="timeline" id="timeline"></div>
+        </section>
+
+        <aside>
+          <section class="card panel metric-panel">
+            <h2>記録時間</h2>
+            <div class="hero" id="hero"></div>
+            <div class="hero-sub" id="herosub"></div>
+            <div class="meter" role="img" id="meter" aria-label=""><i id="meterfill"></i></div>
+          </section>
+
+          <section class="card panel" id="condpanel" hidden>
+            <h2>条件と転換</h2>
+            <div id="conds"></div>
+          </section>
+
+          <section class="card panel">
+            <h2>カテゴリ</h2>
+            <div id="cats"></div>
+            <div class="untracked"><span>未記録</span><span id="untracked"></span></div>
+          </section>
+        </aside>
+      </div>
+
+      <section class="evidence-section" aria-labelledby="evidence-heading">
+        <div class="sectionhead">
+          <div>
+            <span class="eyebrow">10の証左</span>
+            <h2 id="evidence-heading">Evidence Primitives</h2>
+          </div>
+          <p>出来事から、条件・決断・学びへ。チップを選ぶと根拠になった時間へ戻れます。</p>
+        </div>
+
+        <div class="evidence-grid">
+          <details class="evidence-card" id="narrativebox" open hidden>
+            <summary><span>🧵</span><b id="narrativesummary">進行中の物語</b></summary>
+            <div id="narrativelist"></div>
+          </details>
+
+          <details class="evidence-card" id="goalbox" open hidden>
+            <summary><span>🎯</span><b id="goalsummary">月次目標</b></summary>
+            <div id="goallist"></div>
+          </details>
+
+          <details class="evidence-card" id="harvestbox" open hidden>
+            <summary><span>💡</span><b id="harvestsummary">学び</b></summary>
+            <div id="harvestlist"></div>
+          </details>
+
+          <details class="evidence-card" id="stumblebox" open hidden>
+            <summary><span>🩹</span><b id="stumblesummary">つまずき</b></summary>
+            <div id="stumblelist"></div>
+          </details>
+
+          <details class="evidence-card" id="agendabox" open hidden>
+            <summary><span>🗣</span><b id="agendasummary">持ち込み議題</b></summary>
+            <div id="agendalist"></div>
+          </details>
+
+          <details class="evidence-card" id="rewardbox" open hidden>
+            <summary><span>🎁</span><b id="rewardsummary">体験・ご褒美</b></summary>
+            <div id="rewardlist"></div>
+            <section class="settlements" id="rewardsettlementbox" hidden>
+              <h3 id="rewardsettlementsummary">相殺履歴</h3>
+              <div id="rewardsettlementlist"></div>
+            </section>
+          </details>
+        </div>
+      </section>
+
+      <details class="logs card">
+        <summary id="logsummary">時間ログ</summary>
+        <div class="daychips" id="daychips" aria-label="記録のある日"></div>
+        <div class="tablewrap">
+          <table id="logtable">
+            <thead><tr><th>時間</th><th>カテゴリ</th><th>内容</th><th>メモ</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </details>
+    </main>
+
+    <footer>
+      <p><b>時間の証左</b> — AI-operated, local-first daily evidence log</p>
+      <p><kbd>←</kbd> <kbd>→</kbd> 日移動 · <kbd>T</kbd> 最新日 · 正本は <code>data/</code>、表示は単一の <code>index.html</code></p>
+    </footer>
+  </div>
+
+  <div class="tip" id="tip" role="tooltip"></div>
+
+  <script>
+/*__OPEN_DAILY_DATA__*/
+  </script>
+  <script>
+/*__OPEN_DAILY_APP__*/
+  </script>
+</body>
+</html>
