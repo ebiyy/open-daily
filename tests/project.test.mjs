@@ -80,6 +80,7 @@ test("generated index is deterministic, current, and standalone", () => {
   assert.equal(rendered.includes("__OPEN_DAILY_"), false);
   assert.equal((rendered.match(/<script>/g) || []).length, 2);
   assert.equal(/(?:src|href)=["']https?:\/\//i.test(rendered), false);
+  assert.match(rendered, /<details class="logs card" open>/);
   assert.match(rendered, /時間の証左/);
   assert.match(rendered, /Talk your day\. Keep the evidence\./);
 });
