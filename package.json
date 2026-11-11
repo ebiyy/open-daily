@@ -5,7 +5,7 @@
   "description": "AI-operated, local-first daily evidence log",
   "type": "module",
   "engines": {
-    "node": ">=18"
+    "node": ">=22"
   },
   "scripts": {
     "build": "node scripts/build.mjs",

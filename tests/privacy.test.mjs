@@ -41,7 +41,12 @@ test("public snapshot contains no obvious email, secret, or inherited commit ide
     /\b[0-9a-f]{40}\b/i,
   ];
   for (const file of projectFiles()) {
-    const source = fs.readFileSync(file, "utf8");
+    let source = fs.readFileSync(file, "utf8");
+    // Public official Action revisions are intentional supply-chain pins.
+    // Only that YAML field is exempt; arbitrary hashes elsewhere still fail.
+    if (path.relative(ROOT, file).startsWith(".github/workflows/")) {
+      source = source.replace(/^(\s*-?\s*uses: actions\/[a-z0-9-]+@)[0-9a-f]{40}(?=\s+# v\d)/gm, "$1PINNED_REVISION");
+    }
     for (const pattern of patterns) {
       assert.equal(pattern.test(source), false, `${path.relative(ROOT, file)} matches ${pattern}`);
     }

@@ -1,0 +1,51 @@
+name: Published Security
+
+on:
+  schedule:
+    - cron: "23 1 * * 1" # Monday 10:23 JST; GitHub may delay scheduled runs.
+  workflow_dispatch:
+  workflow_run:
+    workflows: [Deploy Pages]
+    branches: [main]
+    types: [completed]
+
+permissions:
+  contents: read
+  actions: read
+  pages: read
+
+concurrency:
+  group: published-security
+  cancel-in-progress: false
+
+jobs:
+  check:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      # Always run trusted default-branch code, never code from a triggering PR.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 26
+          package-manager-cache: false
+      - name: Verify source and security regressions
+        run: npm run verify
+      - name: Check the successfully deployed preview
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          # A new commit can still be deploying. Compare with the last successful
+          # Pages run, not an arbitrary main-branch snapshot or PR artifact.
+          published_sha=$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/pages.yml/runs?branch=main&status=success&per_page=1" --jq '.workflow_runs[0].head_sha')
+          [[ "$published_sha" =~ ^[0-9a-f]{40}$ ]]
+          gh api -H 'Accept: application/vnd.github.raw+json' "repos/$GITHUB_REPOSITORY/contents/index.html?ref=$published_sha" > "$RUNNER_TEMP/published-index.html"
+          published_url=$(gh api "repos/$GITHUB_REPOSITORY/pages" --jq '.html_url')
+          node scripts/check-published.mjs "$published_url" "$RUNNER_TEMP/published-index.html"
+          printf 'Verified HTTPS, published HTML and CSP for commit `%s`.\n' "$published_sha" >> "$GITHUB_STEP_SUMMARY"
