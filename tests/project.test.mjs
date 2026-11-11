@@ -78,9 +78,9 @@ test("generated index is deterministic, current, and standalone", () => {
   assert.equal(rendered, renderIndex());
   assert.equal(fs.readFileSync(outputPath(), "utf8"), rendered);
   assert.equal(rendered.includes("__OPEN_DAILY_"), false);
-  assert.equal((rendered.match(/<script\b/g) || []).length, 2);
-  assert.equal((rendered.match(/<script>/g) || []).length, 1);
-  assert.match(rendered, /<script type="application\/json" id="open-daily-data">/);
+  assert.equal((rendered.match(/<script\b/gi) || []).length, 2);
+  assert.equal((rendered.match(/<script\s*>/gi) || []).length, 1);
+  assert.match(rendered, /<script type="application\/json" id="open-daily-data">/i);
   assert.equal(/(?:src|href)=["']https?:\/\//i.test(rendered), false);
   assert.match(rendered, /<details class="logs card" open>/);
   assert.match(rendered, /時間の証左/);

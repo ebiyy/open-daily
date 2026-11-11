@@ -108,8 +108,10 @@ export function renderIndex(data = loadData()) {
   html = replaceOnce(html, TOKENS.styles, styles);
   html = replaceOnce(html, TOKENS.data, serializePageData(data));
   html = replaceOnce(html, TOKENS.app, app);
-  const scripts = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)];
-  const styleBlocks = [...html.matchAll(/<style>([\s\S]*?)<\/style>/g)];
+  // Inspect our trusted template for CSP hashing, not for HTML sanitization.
+  // Browsers also recognize mixed-case tags and end tags with stray attributes.
+  const scripts = [...html.matchAll(/<script\s*>([\s\S]*?)<\/script(?=[\t\n\f\r />])[^>]*>/gi)];
+  const styleBlocks = [...html.matchAll(/<style\s*>([\s\S]*?)<\/style(?=[\t\n\f\r />])[^>]*>/gi)];
   if (scripts.length !== 1 || styleBlocks.length !== 1) {
     throw new Error("実行用scriptとstyleはそれぞれ1個必要です");
   }

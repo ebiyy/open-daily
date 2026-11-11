@@ -7,7 +7,7 @@ import assert from "node:assert/strict";
 import { ROOT, loadData, renderIndex, serializePageData } from "../scripts/lib/project.mjs";
 
 test("HTML delimiters in notes stay inside JSON and round-trip without alteration", () => {
-  const note = '</ScRiPt ><img src="/probe" onerror="void 0"> <!-- <script> & " \\ \u2028\u2029';
+  const note = '</ScRiPt ><img src="/probe" onerror="void 0"> </sCrIpT\t\n bar> <!-- <SCRIPT> & " \\ \u2028\u2029';
   const data = JSON.parse(JSON.stringify(loadData()));
   const day = Object.keys(data.LOGS)[0];
   data.LOGS[day][0].note = note;
@@ -20,7 +20,7 @@ test("HTML delimiters in notes stay inside JSON and round-trip without alteratio
   assert.deepEqual(JSON.parse(encoded), data);
 
   const html = renderIndex(data);
-  const blocks = [...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi)];
+  const blocks = [...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script(?=[\t\n\f\r />])[^>]*>/gi)];
   assert.equal(blocks.length, 2, "a note must not introduce or terminate a script block");
   assert.match(blocks[0][1], /type="application\/json"/);
   assert.equal(blocks[1][1], "", "only the application block is executable");
@@ -39,8 +39,8 @@ test("CSP authorizes the exact app and stylesheet and denies extra active conten
     return [name, values];
   }));
   const hash = (source) => `'sha256-${createHash("sha256").update(source).digest("base64")}'`;
-  const app = /<script>([\s\S]*?)<\/script>/.exec(html)[1];
-  const style = /<style>([\s\S]*?)<\/style>/.exec(html)[1];
+  const app = /<script\s*>([\s\S]*?)<\/script(?=[\t\n\f\r />])[^>]*>/i.exec(html)[1];
+  const style = /<style\s*>([\s\S]*?)<\/style(?=[\t\n\f\r />])[^>]*>/i.exec(html)[1];
   assert.deepEqual(directives.get("script-src"), [hash(app)]);
   assert.deepEqual(directives.get("style-src"), [hash(style)]);
   assert.notEqual(hash(app + "\nvoid 0;"), directives.get("script-src")[0]);
