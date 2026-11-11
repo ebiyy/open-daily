@@ -1,16 +1,28 @@
-/* Browser application. Data and app stay in separate script tags so malformed
-   data can fail with a visible guard instead of leaving a blank page. */
+/* Browser application. The separate JSON data block is parsed as data only;
+   malformed data fails with a visible guard instead of leaving a blank page. */
 
 const $ = (id) => document.getElementById(id);
 
-if (typeof CONFIG !== "object" || typeof CATEGORIES !== "object" ||
-    typeof LOGS !== "object" || typeof e !== "function") {
+let pageData;
+try {
+  pageData = JSON.parse($("open-daily-data")?.textContent || "");
+  if (!pageData?.CONFIG || typeof pageData.CONFIG !== "object" ||
+      !pageData.CATEGORIES || typeof pageData.CATEGORIES !== "object" ||
+      !pageData.LOGS || typeof pageData.LOGS !== "object") {
+    throw new Error("missing page data");
+  }
+} catch {
   const banner = document.createElement("div");
   banner.className = "alert";
   banner.textContent = "データを読み込めません。data/ 配下の直近の編集を確認してください。";
   document.body.prepend(banner);
   throw new Error("open-daily data failed to load");
 }
+
+const {
+  CONFIG, CATEGORIES, LOGS, CONDITIONS, HARVESTS, STUMBLES,
+  NARRATIVES, MONTHLY_GOALS, AGENDAS, REWARDS, REWARD_SETTLEMENTS,
+} = pageData;
 
 const DAY_MIN = { start: CONFIG.dayStart * 60, end: CONFIG.dayEnd * 60 };
 const FRAME_MIN = DAY_MIN.end - DAY_MIN.start;
